@@ -37,6 +37,8 @@
 
 /* magic string to reboot upon reading */
 #define REBOOT_STR "REBOOT"
+#define EDL_REBOOT_STR "edl-reboot"
+
 /* size to make read buffer */
 #define MAX_BUF 64
 /* name of named pipe to read from */
@@ -114,13 +116,20 @@ int main() {
 
             debug_printf("read: read_count %d, read: %s\n",read_count,buf);
 
-            /* if read REBOOT_STR, then call reboot */
+            /* if read REBOOT_STR, then call reboot 
+               if read EDL_REBOOT_STR, then call edl-reboot */
             if(strncmp(buf,REBOOT_STR,strlen(REBOOT_STR)) == 0) {
                 debug_printf("going for reboot\n");
                 printf("reboot-daemon: initiating reboot\n");
                 system("reboot");
                 break;
+            } else if(strncmp(buf,EDL_REBOOT_STR,strlen(EDL_REBOOT_STR)) == 0) {
+                debug_printf("going for edl-reboot\n");
+                printf("reboot-daemon: initiating edl-reboot\n");
+                system("sys_reboot edl");
+                break;
             }
+
         }
 
         /* close FIFO */
