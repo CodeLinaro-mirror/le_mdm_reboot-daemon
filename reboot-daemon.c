@@ -38,7 +38,7 @@
 
 /* magic string to reboot upon reading */
 #define REBOOT_STR "REBOOT"
-#define EDL_REBOOT_STR "edl-reboot"
+#define EDL_REBOOT_STR "EDL-REBOOT"
 
 /* size to make read buffer */
 #define MAX_BUF 64
