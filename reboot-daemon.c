@@ -34,6 +34,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h> //Fix clang build errors.
 
 /* magic string to reboot upon reading */
 #define REBOOT_STR "REBOOT"
