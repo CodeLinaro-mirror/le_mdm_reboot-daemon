@@ -127,7 +127,7 @@ int main() {
             } else if(strncmp(buf,EDL_REBOOT_STR,strlen(EDL_REBOOT_STR)) == 0) {
                 debug_printf("going for edl-reboot\n");
                 printf("reboot-daemon: initiating edl-reboot\n");
-                system("sys_reboot edl");
+                system("reboot edl");
                 break;
             }
 
