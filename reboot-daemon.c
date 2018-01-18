@@ -89,7 +89,14 @@ int main() {
         debug_printf("chown failed: %s\n", strerror(errno));
         return 1;
     }
-
+#ifdef DROP_PRIVS
+  if ( getuid() == 0) {
+      chmod(FIFO_NAME, 0660);
+      setgid(GID);
+      setuid(1000);
+      debug_printf("dropped previlidges \n");
+   }
+#endif
     /* read and open forever */
     while(1) {
 
