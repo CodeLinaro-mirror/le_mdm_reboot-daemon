@@ -15,6 +15,8 @@ AC_PROG_CC
 # Checks for header files.
 AC_CHECK_HEADERS([sys/types.h sys/stat.h unistd.h string.h fcntl.h errno.h stdio.h])
 
+AM_CONDITIONAL(WITH_SYSTEMD, test "x${with_systemd}" = "xyes")
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_OFF_T
 AC_TYPE_SIZE_T
