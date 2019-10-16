@@ -60,6 +60,7 @@ int main() {
     char buf[MAX_BUF]; // buffer to store read data in
     int read_count; //numbef of characters read
 
+    #ifndef SYSTEMD
     /* delete the fifo if it already exists */
     debug_printf("Unlinking\n");
     if(unlink(FIFO_NAME) == -1) {
@@ -89,6 +90,7 @@ int main() {
         debug_printf("chown failed: %s\n", strerror(errno));
         return 1;
     }
+    #endif
 
     /* read and open forever */
     while(1) {
