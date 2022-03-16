@@ -83,12 +83,14 @@ int main() {
         return 1;
     }
 
-    /* change fifo owner to rebooters group */
-    debug_printf("chowning\n");
-    if(chown(FIFO_NAME,UID,GID) == -1) {
-        debug_printf("chown failed: %s\n", strerror(errno));
-        return 1;
-    }
+    #ifndef UBCORE
+        /* change fifo owner to rebooters group */
+        debug_printf("chowning\n");
+        if(chown(FIFO_NAME,UID,GID) == -1) {
+            debug_printf("chown failed: %s\n", strerror(errno));
+            return 1;
+        }
+    #endif
 
     /* read and open forever */
     while(1) {
@@ -119,18 +121,40 @@ int main() {
 
             /* if read REBOOT_STR, then call reboot 
                if read EDL_REBOOT_STR, then call edl-reboot */
-            if(strncmp(buf,REBOOT_STR,strlen(REBOOT_STR)) == 0) {
-                debug_printf("going for reboot\n");
-                printf("reboot-daemon: initiating reboot\n");
-                system("reboot");
-                break;
-            } else if(strncmp(buf,EDL_REBOOT_STR,strlen(EDL_REBOOT_STR)) == 0) {
-                debug_printf("going for edl-reboot\n");
-                printf("reboot-daemon: initiating edl-reboot\n");
-                system("reboot edl");
-                break;
-            }
 
+            /* reboot can not be invoked directly in the case of Ubuntu Core */
+            #ifdef UBCORE
+                if(strncmp(buf,REBOOT_STR,strlen(REBOOT_STR)) == 0) {
+                    debug_printf("going for dbus reboot\n");
+                    printf("reboot-daemon: initiating dbus reboot\n");
+                    system("dbus-send --system --print-reply \
+                        --dest=org.freedesktop.login1 /org/freedesktop/login1 \
+                        \"org.freedesktop.login1.Manager.Reboot\" boolean:true");
+                    break;
+                } else if(strncmp(buf,EDL_REBOOT_STR,strlen(EDL_REBOOT_STR)) == 0) {
+                    debug_printf("going for dbus edl-reboot\n");
+                    printf("reboot-daemon: initiating  dbus edl-reboot\n");
+                    system("dbus-send --system --print-reply \
+                        --dest=org.freedesktop.login1 /org/freedesktop/login1 \
+                        \"org.freedesktop.login1.Manager.SetRebootParameter\" string:edl");
+                    system("dbus-send --system --print-reply \
+                        --dest=org.freedesktop.login1 /org/freedesktop/login1 \
+                        \"org.freedesktop.login1.Manager.Reboot\" boolean:true");
+                    break;
+                }
+            #else
+                if(strncmp(buf,REBOOT_STR,strlen(REBOOT_STR)) == 0) {
+                    debug_printf("going for reboot\n");
+                    printf("reboot-daemon: initiating reboot\n");
+                    system("reboot");
+                    break;
+                } else if(strncmp(buf,EDL_REBOOT_STR,strlen(EDL_REBOOT_STR)) == 0) {
+                    debug_printf("going for edl-reboot\n");
+                    printf("reboot-daemon: initiating edl-reboot\n");
+                    system("reboot edl");
+                    break;
+                }
+            #endif
         }
 
         /* close FIFO */
