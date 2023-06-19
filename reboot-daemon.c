@@ -83,7 +83,7 @@ int main() {
         return 1;
     }
 
-    #ifndef UBCORE
+    #if (!defined (UBCORE)) || (!defined (UBBASE))
         /* change fifo owner to rebooters group */
         debug_printf("chowning\n");
         if(chown(FIFO_NAME,UID,GID) == -1) {
@@ -122,8 +122,8 @@ int main() {
             /* if read REBOOT_STR, then call reboot 
                if read EDL_REBOOT_STR, then call edl-reboot */
 
-            /* reboot can not be invoked directly in the case of Ubuntu Core */
-            #ifdef UBCORE
+            /* reboot can not be invoked directly in the case of Ubuntu Core or Ubuntu Base*/
+            #if (defined (UBCORE)) || (defined (UBBASE))
                 if(strncmp(buf,REBOOT_STR,strlen(REBOOT_STR)) == 0) {
                     debug_printf("going for dbus reboot\n");
                     printf("reboot-daemon: initiating dbus reboot\n");
